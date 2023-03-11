@@ -1,1 +1,2 @@
-xlsxwriter
+streamlit==0.89.0
+xlwt==1.3.0
