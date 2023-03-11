@@ -38,8 +38,13 @@ st.title("Search and Add Links to Excel Sheet")
 
 # Create input fields for folder, search name, and Excel file
 folder_path = st.text_input("Folder to search in:")
+if st.button("Browse folder"):
+    folder_path = st.file_uploader("Select a folder", type="dir")
+
 search_name = st.text_input("File name to search for:")
 file_path = st.text_input("Excel file to write links to:")
+if st.button("Browse file"):
+    file_path = st.file_uploader("Select a file", type="xlsx")
 
 # Add button to start search and link creation
 if st.button("Search and Add Links"):
