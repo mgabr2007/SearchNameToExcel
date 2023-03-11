@@ -1,6 +1,6 @@
 import os
 import glob
-import xlsxwriter
+import xlwt
 import streamlit as st
 
 def search_and_add_links(folder_path, search_name, file_path):
@@ -14,19 +14,19 @@ def search_and_add_links(folder_path, search_name, file_path):
     # Create link to file and add it to Excel sheet
     if file_paths:
         # Open Excel file
-        workbook = xlsxwriter.Workbook(file_path)
-        worksheet = workbook.add_worksheet()
+        workbook = xlwt.Workbook()
+        worksheet = workbook.add_sheet('Links')
 
         # Add search word and links to Excel sheet
         row = 0
         for path in file_paths:
             link = f'=HYPERLINK("{path}")'
             worksheet.write(row, 0, search_name)
-            worksheet.write_url(row, 1, path, string=link)
+            worksheet.write(row, 1, link)
             row += 1
 
         # Save changes to Excel sheet
-        workbook.close()
+        workbook.save(file_path)
 
         # Display success message
         st.success("File links added successfully!")
@@ -37,9 +37,14 @@ def search_and_add_links(folder_path, search_name, file_path):
 st.title("Search and Add Links to Excel Sheet")
 
 # Create input fields for folder, search name, and Excel file
-folder_path = st.file_uploader("Folder to search in:", type="directory")
+folder_path = st.text_input("Folder to search in:")
+if st.button("Browse folder"):
+    folder_path = st.file_uploader("Select a folder to search in", type="directory")
+
 search_name = st.text_input("File name to search for:")
 file_path = st.text_input("Excel file to write links to:")
+if st.button("Browse file"):
+    file_path = st.file_uploader("Select an Excel file to write links to", type="xls")
 
 # Add button to start search and link creation
 if st.button("Search and Add Links"):
