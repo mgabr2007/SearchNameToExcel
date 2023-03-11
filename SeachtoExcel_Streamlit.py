@@ -1,12 +1,6 @@
-# Install required packages
-# Run this command in your terminal or command prompt:
-# pip install xlwt xlrd xlutils streamlit
-
 import os
 import glob
-import xlwt
-import xlrd
-from xlutils.copy import copy
+import xlsxwriter
 import streamlit as st
 
 def search_and_add_links(folder_path, search_name, file_path):
@@ -20,25 +14,19 @@ def search_and_add_links(folder_path, search_name, file_path):
     # Create link to file and add it to Excel sheet
     if file_paths:
         # Open Excel file
-        workbook = xlrd.open_workbook(file_path)
-        worksheet = workbook.sheet_by_index(0)
-
-        # Create a copy of the workbook to write to
-        new_workbook = copy(workbook)
-        new_worksheet = new_workbook.get_sheet(0)
-
-        # Get next empty row in Excel sheet
-        next_row = worksheet.nrows
+        workbook = xlsxwriter.Workbook(file_path)
+        worksheet = workbook.add_worksheet()
 
         # Add search word and links to Excel sheet
+        row = 0
         for path in file_paths:
             link = f'=HYPERLINK("{path}")'
-            new_worksheet.write(next_row, 0, search_name)
-            new_worksheet.write(next_row, 1, link)
-            next_row += 1
+            worksheet.write(row, 0, search_name)
+            worksheet.write_url(row, 1, path, string=link)
+            row += 1
 
         # Save changes to Excel sheet
-        new_workbook.save(file_path)
+        workbook.close()
 
         # Display success message
         st.success("File links added successfully!")
