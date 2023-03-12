@@ -1,10 +1,17 @@
 import os
 import xlsxwriter
+import tkinter as tk
+from tkinter import filedialog
 import time
 
 # Get user input for search name and folder path
 search_name = input("Enter file name to search for: ")
-folder_path = input("Enter folder path to search in: ")
+
+# Create a Tkinter window to browse for a folder
+root = tk.Tk()
+root.withdraw()
+
+folder_path = filedialog.askdirectory(title="Select Folder to Search In")
 output_file_path = input("Enter output file path: ")
 
 # Create a new Excel workbook and worksheet
