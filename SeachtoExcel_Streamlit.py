@@ -1,54 +1,35 @@
 import os
 import glob
-import streamlit as st
 import xlsxwriter
 
-def search_and_add_links(folder_path, search_name, file_path):
-    # Search for file in selected folder
-    file_paths = []
-    for root, dirs, files in os.walk(folder_path):
-        for file in files:
-            if search_name in file:
-                file_paths.append(os.path.join(root, file))
+# Get user input for search name and folder path
+search_name = input("Enter file name to search for: ")
+folder_path = input("Enter folder path to search in: ")
+output_file_path = input("Enter output file path: ")
 
-    # Create link to file and add it to Excel sheet
-    if file_paths:
-        # Open Excel file
-        workbook = xlsxwriter.Workbook(file_path)
-        worksheet = workbook.add_worksheet()
+# Use raw string literal to properly represent the search name
+search_name = r"{}".format(search_name)
 
-        # Add search word and links to Excel sheet
-        row = 0
-        for path in file_paths:
-            link = f'=HYPERLINK("{path}")'
-            worksheet.write(row, 0, search_name)
-            worksheet.write_url(row, 1, path, string=link)
-            row += 1
+# Create a new Excel workbook and worksheet
+workbook = xlsxwriter.Workbook(output_file_path)
+worksheet = workbook.add_worksheet()
 
-        # Save changes to Excel sheet
-        workbook.close()
+# Set up column headers in the worksheet
+worksheet.write(0, 0, "Search Name")
+worksheet.write(0, 1, "File Path")
 
-        # Display success message
-        st.success("File links added successfully!")
-    else:
-        st.warning(f"No files found with name '{search_name}'")
+# Initialize row counter
+row = 1
 
-# Create Streamlit app
-st.title("Search and Add Links to Excel Sheet")
+# Search for files in the folder path that match the search name
+for file_path in glob.glob(os.path.join(folder_path, "**", "*{}*".format(search_name)), recursive=True):
+    # Write the search name and file path to the worksheet
+    worksheet.write(row, 0, search_name)
+    worksheet.write(row, 1, file_path)
+    row += 1
 
-# Create input fields for folder, search name, and Excel file
-folder_path = st.text_input("Folder to search in:")
-if st.button("Browse folder"):
-    folder_path = st.file_uploader("Select a folder to search in", type="directory")
+# Close the Excel workbook
+workbook.close()
 
-search_name = st.text_input("File name to search for:")
-file_path = st.text_input("Excel file to write links to:")
-if st.button("Browse file"):
-    file_path = st.file_uploader("Select an Excel file to write links to", type="xlsx")
-
-# Add button to start search and link creation
-if st.button("Search and Add Links"):
-    if folder_path and search_name and file_path:
-        search_and_add_links(folder_path, search_name, file_path)
-    else:
-        st.warning("Please fill in all input fields")
+# Print a message to indicate that the search is complete
+print("Search complete. Results saved to {}".format(output_file_path))
