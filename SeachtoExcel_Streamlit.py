@@ -1,11 +1,12 @@
 import os
+import re
 import xlsxwriter
 import streamlit as st
 
 # Get user input for search name and folder path
 search_name = st.text_input("Enter file name to search for: ")
 folder_path = st.file_input("Enter folder path to search in: ", type="directory")
-output_file_path = st.file_uploader("Enter output file path: ", type=["xlsx"])
+output_file_path = st.text_input("Enter output file path: ")
 
 # Create a new Excel workbook and worksheet
 workbook = xlsxwriter.Workbook(output_file_path)
@@ -34,4 +35,24 @@ with os.scandir(folder_path) as entries:
 workbook.close()
 
 # Print a message to indicate that the search is complete
-st.success("Search complete. Results saved to {}. Elapsed time: {:.2f} seconds".format(output_file_path, elapsed_time))
+st.write("Search complete. Results saved to {}".format(output_file_path))
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Read the Excel file into a pandas dataframe
+df = pd.read_excel(output_file_path)
+
+# Group the dataframe by the search name and count the number of files for each name
+grouped_df = df.groupby("Search Name").count()
+
+# Create a bar plot of the grouped data
+fig, ax = plt.subplots()
+ax.bar(grouped_df.index, grouped_df["File Path"])
+ax.set_xlabel("Search Name")
+ax.set_ylabel("Number of Files")
+ax.set_title("Files Found by Search Name")
+
+# Show the plot
+st.pyplot(fig)
