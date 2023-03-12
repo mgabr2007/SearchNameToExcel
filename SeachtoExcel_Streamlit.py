@@ -1,6 +1,5 @@
 import os
 import xlsxwriter
-import re
 import streamlit as st
 
 # Set up the Streamlit app
@@ -9,7 +8,7 @@ st.write("Enter search criteria and select folder to search in.")
 
 # Get user input for search name and folder path
 search_name = st.text_input("Enter file name to search for:")
-folder_path = st.file_input("Enter folder path to search in:", type="directory")
+folder_path = st.text_input("Enter folder path to search in:")
 output_file_path = st.file_uploader("Select output file path:", type=["xls", "xlsx"])
 
 # If the user has selected a valid output file path, create a new Excel workbook and worksheet
